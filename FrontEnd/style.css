@@ -1,0 +1,31 @@
+/*Main Background*/
+body{
+    background-color: #ffddcc;
+}
+
+/*Main Box Setting
+  Add class = box to use*/
+.box{
+    border: 2px solid;
+    color: black;  
+    border-radius: 5px; 
+    margin: 10px;
+    padding: 5px;
+}
+
+img.center{
+    display: block;
+    margin: auto;
+}
+
+/* To make any text center, add class = center-text */
+.center-text{
+    text-align: center;
+}
+
+
+/* Button */
+div.container-button{
+    display: flex;
+    justify-content: space-around;
+}
