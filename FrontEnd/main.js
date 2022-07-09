@@ -59,7 +59,11 @@ function generateNodeData(node){
         `;
     }else{
         node.innerHTML += `
-        
+        <form>
+        <label for="myfile-download">Please enter the ID generated when the file was uploaded - </label>
+        <input type="text" id="myfile-download" name="myfile-download" class="myFile-download">
+        <button class="myFile-download-submit">Download</button>
+        </form>
         `;
     }
 }
@@ -74,7 +78,7 @@ function handleRequest(stateofUpload){
         //Handle things for download
         generateNodeData(downloadFileNode);
 
-        // handleStateOfDownload();
+        handleStateOfDownload();
     }
 }
 
@@ -111,7 +115,7 @@ function handleStateOfUpload(){
 
         console.log('This is fileData', fileData);
 
-        fetch("http://localhost:5600/randomPath", {
+        fetch("http://localhost:5600/uploadFile", {
             method : "POST",
             body : fileData
         })
@@ -126,5 +130,28 @@ function handleStateOfUpload(){
 }
 
 function handleStateOfDownload(){
+    const downloadButton = document.querySelector("form button.myFile-download-submit");
+    const inputAreaforIDNode = document.querySelector("form input.myFile-download");
 
+    downloadButton.addEventListener('click', function(event){
+        event.preventDefault();
+        console.log('Final download button is cliked');
+
+        const idEnteredByUser = inputAreaforIDNode.value;
+
+        //Send this data to server -
+
+        const body = {id : idEnteredByUser};
+
+        fetch("http://localhost:5600/downloadFile", {
+            method : "POST",
+            body : JSON.stringify(body),
+        })
+        .then((res) => res.json())
+        .then((finalRes) => {
+            console.log('Final Res', finalRes);
+        })
+
+
+    })
 }

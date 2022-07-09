@@ -32,8 +32,8 @@ app.use(bodyParser.text({limit: '50mb'}));
 
 const finalObj = {};
 
-app.post("/randomPath", cors(corsOption), bodyParser.text({type : 'text'}),function(req, res){
-    console.log('You have hit the /randomPath endpoint with CORS enabled');
+app.post("/uploadFile", cors(corsOption), bodyParser.text({type : 'text'}),function(req, res){
+    console.log('You have hit the /uploadFile endpoint with CORS enabled');
 
     let bodyRecieved = req.body;
     const encodedFileData = bodyRecieved.substring(bodyRecieved.indexOf(',') + 1);
@@ -71,6 +71,12 @@ app.post("/randomPath", cors(corsOption), bodyParser.text({type : 'text'}),funct
     //In the response the generated nunmber is to be shown so the user can download using that
 
     res.json({id});
+})
+
+app.post("/downloadFile", cors(corsOption), function(req, res){
+    console.log(req.body);
+
+    res.json({ok : "ok"})
 })
 
 app.listen(5600, "localhost", function(){
