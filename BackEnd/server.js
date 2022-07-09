@@ -22,6 +22,32 @@ function generateID(){
     return megaObj.length ;
 }
 
+function getFileDetails(id){
+
+    //Implemented binary search to get the file details
+
+    let i = 0;
+    let j = megaObj.length - 1;
+
+    const target = id;
+    
+    while(i <= j){
+        
+        let mid = parseInt((i+j)/2);
+
+        if(mid === target){
+            return mid;
+        }else if(mid > target){
+            j = j - 1;
+        }else if(mid < target){
+            i = i + 1;
+        }else{
+            return 0;
+        }
+    }
+    
+}
+
 const corsOption = {
     origin : "*",
     optionsSuccessStatus : 200
@@ -74,7 +100,12 @@ app.post("/uploadFile", cors(corsOption), bodyParser.text({type : 'text'}),funct
 })
 
 app.post("/downloadFile", cors(corsOption), function(req, res){
-    console.log(req.body);
+
+    const body = req.body;
+
+    //Get the file details 
+    const idxOfFileDetails = getFileDetails(body.id);
+    const fileDetail = megaObj[idxOfFileDetails];
 
     res.json({ok : "ok"})
 })
