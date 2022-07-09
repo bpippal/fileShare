@@ -4,6 +4,23 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const utilFunction = require("./utilFunction.js");
 
+/* megaObj is an array of object with the structure of the object as - 
+{
+    id : id,
+    fileDataObj = {
+        fileData : encodedFileData,
+        encoding : encodingUsed,
+        fileExtension : fileExtension
+    }
+} 
+This is to ensure that binary search can be implemented on id
+*/
+
+const megaObj = [];
+
+function generateID(){
+    return megaObj.length ;
+}
 
 const corsOption = {
     origin : "*",
@@ -12,6 +29,8 @@ const corsOption = {
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.text({limit: '50mb'}));
+
+const finalObj = {};
 
 app.post("/randomPath", cors(corsOption), bodyParser.text({type : 'text'}),function(req, res){
     console.log('You have hit the /randomPath endpoint with CORS enabled');
@@ -39,15 +58,19 @@ app.post("/randomPath", cors(corsOption), bodyParser.text({type : 'text'}),funct
         fileExtension : fileExtension
     }
 
-    // UNFORTUNALTEY STUCK HERE :((((()))))
-    // TRY REDIS MAYBE
+    // The plan is to save the data on the server for now
+    const id = generateID();
+    const objForMegaObj = {
+        id, fileDataObj
+    };
 
-    const unqNumber = utilFunction.objToUnq(fileDataObj);
+    megaObj.push(objForMegaObj);
 
-    
-    //Generate hash for encodedFileData and return it to user - 
+    console.log(megaObj);
 
-    res.json({"name" : "Bharat"});
+    //In the response the generated nunmber is to be shown so the user can download using that
+
+    res.json({id});
 })
 
 app.listen(5600, "localhost", function(){

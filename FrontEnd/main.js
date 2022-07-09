@@ -119,7 +119,7 @@ function handleStateOfUpload(){
         .then((finalRes) => {
             const uploadFileResultNode = document.querySelector('div.upload-file-result');
 
-            uploadFileResultNode.innerText = 'Yay! Your File is uploaded';
+            uploadFileResultNode.innerText = `Yay! Your File is uploaded. Please use the ID - "${finalRes.id}" to download the file`;
         })
     })
 
