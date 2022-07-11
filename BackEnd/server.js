@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const utilFunction = require("./utilFunction.js");
+
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.text({limit: '50mb'}));
 
 /* megaObj is an array of object with the structure of the object as - 
 {
@@ -22,29 +24,32 @@ function generateID(){
     return megaObj.length ;
 }
 
-function getFileDetails(id){
+function getIdxById(id){
 
     //Implemented binary search to get the file details
 
-    let i = 0;
-    let j = megaObj.length - 1;
+    let leftIdx = 0;
+    let rightIdx = megaObj.length - 1;
 
-    const target = id;
+    const target = parseInt(id);
     
-    while(i <= j){
-        
-        let mid = parseInt((i+j)/2);
+    while(leftIdx <= rightIdx){
+    
+        let mid = parseInt((leftIdx + rightIdx)/2);
+        console.log("🚀 ~ file: server.js ~ line 41 ~ getIdxById ~ mid", mid)
+        console.log("🚀 ~ file: server.js ~ line 44 ~ getIdxById ~ megaObj", megaObj)
 
-        if(mid === target){
+        if(megaObj[mid].id === target){
             return mid;
-        }else if(mid > target){
-            j = j - 1;
-        }else if(mid < target){
-            i = i + 1;
-        }else{
-            return 0;
+        }else if(megaObj[mid].id > target){
+            rightIdx = mid - 1;
+        }else if(megaObj[mid].id < target){
+            leftIdx = mid + 1;
         }
     }
+    
+    //For nothing being found;
+    return -1;
     
 }
 
@@ -53,13 +58,10 @@ const corsOption = {
     optionsSuccessStatus : 200
 }
 
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.text({limit: '50mb'}));
 
 const finalObj = {};
 
 app.post("/uploadFile", cors(corsOption), bodyParser.text({type : 'text'}),function(req, res){
-    console.log('You have hit the /uploadFile endpoint with CORS enabled');
 
     let bodyRecieved = req.body;
     const encodedFileData = bodyRecieved.substring(bodyRecieved.indexOf(',') + 1);
@@ -92,7 +94,6 @@ app.post("/uploadFile", cors(corsOption), bodyParser.text({type : 'text'}),funct
 
     megaObj.push(objForMegaObj);
 
-    console.log(megaObj);
 
     //In the response the generated nunmber is to be shown so the user can download using that
 
@@ -101,13 +102,25 @@ app.post("/uploadFile", cors(corsOption), bodyParser.text({type : 'text'}),funct
 
 app.post("/downloadFile", cors(corsOption), function(req, res){
 
-    const body = req.body;
+    const body = JSON.parse(req.body);
 
     //Get the file details 
-    const idxOfFileDetails = getFileDetails(body.id);
-    const fileDetail = megaObj[idxOfFileDetails];
+    const idxOfFileDetails = getIdxById(body.id);
 
-    res.json({ok : "ok"})
+    //Handling fileNotFound case
+    if(idxOfFileDetails === -1){
+        res.status(404).send({err : "File not Found"})
+    }
+
+    const fileDetails = megaObj[idxOfFileDetails];
+
+/* 
+Once fileDetails are fetched, delete the fileDetails from the server.. cant use delete as it leave' undefined holes which create's issues during binary search
+TODO
+*/
+
+    res.status(201).send(fileDetails);
+
 })
 
 app.listen(5600, "localhost", function(){
