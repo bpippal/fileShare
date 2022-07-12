@@ -1,5 +1,9 @@
-const inputNode = document.querySelector("input");
+const fs = require('fs');
 
-inputNode.addEventListener('input', function(){
-    console.log(inputNode.value);
+const readStr = fs.createReadStream(__dirname + "/text.txt");
+const wrtStream = fs.createWriteStream(__dirname + "/newFile.txt");
+
+readStr.on('data', function(chunk){
+    console.log(chunk);
+    wrtStream.write(chunk.toString());
 })

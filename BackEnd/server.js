@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require("fs");
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.text({limit: '50mb'}));
@@ -36,8 +37,6 @@ function getIdxById(id){
     while(leftIdx <= rightIdx){
     
         let mid = parseInt((leftIdx + rightIdx)/2);
-        console.log("🚀 ~ file: server.js ~ line 41 ~ getIdxById ~ mid", mid)
-        console.log("🚀 ~ file: server.js ~ line 44 ~ getIdxById ~ megaObj", megaObj)
 
         if(megaObj[mid].id === target){
             return mid;
@@ -52,6 +51,18 @@ function getIdxById(id){
     return -1;
     
 }
+
+function getRandomFileName(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
 
 const corsOption = {
     origin : "*",
@@ -118,6 +129,17 @@ app.post("/downloadFile", cors(corsOption), function(req, res){
 Once fileDetails are fetched, delete the fileDetails from the server.. cant use delete as it leave' undefined holes which create's issues during binary search
 TODO
 */
+
+    let filePath = __dirname + "/files";
+    const fileType = fileDetails.fileDataObj.fileExtension;
+    const randomFileName = getRandomFileName(15);
+    filePath = filePath + "/" + randomFileName + "." + fileType;
+    console.log("🚀 ~ file: server.js ~ line 137 ~ app.post ~ filePath", filePath)
+    
+
+    //TODO write data to the file and then give option to download that file
+    const wrtStream = fs.createWriteStream(filePath);
+    wrtStream.write(fileDetails.fileDataObj.fileData);
 
     res.status(201).send(fileDetails);
 
